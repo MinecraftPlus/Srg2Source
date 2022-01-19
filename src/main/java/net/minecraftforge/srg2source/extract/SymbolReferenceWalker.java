@@ -613,6 +613,7 @@ public class SymbolReferenceWalker {
      * TODO: Move this to a generic annotation processor system?
      */
     private boolean process(NormalAnnotation node) {
+        builder.addAnnotationDeclaration(node.getStartPosition(), node.getLength(), node.resolveTypeBinding().getQualifiedName());
         if (mixins == null)
             return true;
         String name = getInternalName((ITypeBinding)node.getTypeName().resolveBinding(), node.getTypeName());
@@ -620,6 +621,7 @@ public class SymbolReferenceWalker {
     }
 
     private boolean process(SingleMemberAnnotation node) {
+        builder.addAnnotationDeclaration(node.getStartPosition(), node.getLength(), node.resolveTypeBinding().getQualifiedName());
         if (mixins == null)
             return true;
         String name = getInternalName((ITypeBinding)node.getTypeName().resolveBinding(), node.getTypeName());
@@ -642,6 +644,7 @@ public class SymbolReferenceWalker {
     }
 
     private boolean process(MarkerAnnotation node) {
+        builder.addAnnotationDeclaration(node.getStartPosition(), node.getLength(), node.resolveTypeBinding().getQualifiedName());
         if (mixins == null)
             return true;
         String name = getInternalName((ITypeBinding)node.getTypeName().resolveBinding(), node.getTypeName());
