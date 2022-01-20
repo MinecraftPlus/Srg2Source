@@ -22,6 +22,7 @@ package net.minecraftforge.srg2source.extract;
 import java.util.HashMap;
 import java.util.List;
 
+import net.minecraftforge.srg2source.util.Util;
 import org.eclipse.jdt.core.dom.*;
 import org.objectweb.asm.Opcodes;
 
@@ -625,6 +626,11 @@ public class SymbolReferenceWalker {
         return this.mixins.process(node, name);
     }
 
+    private boolean process(FieldDeclaration node) {
+        builder.addFieldDeclaration(node.getStartPosition(), node.getLength(), Util.getFieldName(node), node.getType().resolveBinding().getKey());
+        return true;
+    }
+
     private boolean process(SingleVariableDeclaration node) {
         trackLocalVariable(node.getName(), node.resolveBinding());
         return true;
@@ -710,7 +716,7 @@ public class SymbolReferenceWalker {
         @Override public boolean visit(ExpressionMethodReference       node) { return true; }
         @Override public boolean visit(ExpressionStatement             node) { return true; }
         @Override public boolean visit(FieldAccess                     node) { return true; }
-        @Override public boolean visit(FieldDeclaration                node) { return true; }
+        @Override public boolean visit(FieldDeclaration                node) { return process(node); }
         @Override public boolean visit(ForStatement                    node) { return true; }
         @Override public boolean visit(GuardedPattern                  node) { return true; }
         @Override public boolean visit(IfStatement                     node) { return true; }
