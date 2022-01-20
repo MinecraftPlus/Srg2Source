@@ -146,6 +146,10 @@ public class RangeMapBuilder extends ConfLogger<RangeMapBuilder> {
         addStructure(StructuralEntry.createInterface(getParent(start, length), start, length, name));
     }
 
+    public void addFieldDeclaration(int start, int length, String name, String desc) {
+        addStructure(StructuralEntry.createField(getParent(start, length), start, length, name, desc));
+    }
+
     // Code Elements
     private void addCode(RangeEntry entry) {
         StructuralEntry parent = getParent(entry);

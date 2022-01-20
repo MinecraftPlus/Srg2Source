@@ -38,6 +38,12 @@ public class StructuralEntry implements IRange {
             return new StructuralEntry(me, parent, Integer.parseInt(pts[0]), Integer.parseInt(pts[1]), pts[2], pts[3]);
         }),
         ENUM,
+        FIELD((me, parent, data) -> {
+            String[] pts = data.split(" ");
+            if (pts.length != 4)
+                throw new IllegalArgumentException("Missing required parts. Parts Length: " + pts.length);
+            return new StructuralEntry(me, parent, Integer.parseInt(pts[0]), Integer.parseInt(pts[1]), pts[2], pts[3]);
+        }),
         ANNOTATION((me, parent, data) -> {
             String[] pts = data.split(" ");
             if (pts.length != 3)
@@ -66,7 +72,7 @@ public class StructuralEntry implements IRange {
     }
 
     public static StructuralEntry createRoot() {
-        return new StructuralEntry(Type.ROOT, null,-1, -1, null, null);
+        return new StructuralEntry(Type.ROOT, null, -1, -1, null, null);
     }
 
     public static StructuralEntry createAnnotation(StructuralEntry parent, int start, int length, String name) {
@@ -81,16 +87,20 @@ public class StructuralEntry implements IRange {
         return new StructuralEntry(Type.ENUM, parent, start, length, name, null);
     }
 
-    public static StructuralEntry createRecord(StructuralEntry parent,int start, int length, String name) {
+    public static StructuralEntry createRecord(StructuralEntry parent, int start, int length, String name) {
         return new StructuralEntry(Type.RECORD, parent, start, length, name, null);
     }
 
-    public static StructuralEntry createInterface(StructuralEntry parent,int start, int length, String name) {
+    public static StructuralEntry createInterface(StructuralEntry parent, int start, int length, String name) {
         return new StructuralEntry(Type.INTERFACE, parent, start, length, name, null);
     }
 
-    public static StructuralEntry createMethod(StructuralEntry parent,int start, int length, String name, String desc) {
+    public static StructuralEntry createMethod(StructuralEntry parent, int start, int length, String name, String desc) {
         return new StructuralEntry(Type.METHOD, parent, start, length, name, desc);
+    }
+
+    public static StructuralEntry createField(StructuralEntry parent, int start, int length, String name, String desc) {
+        return new StructuralEntry(Type.FIELD, parent, start, length, name, desc);
     }
 
     public static StructuralEntry read(int spec, String type, StructuralEntry parent, String data) {
@@ -200,7 +210,7 @@ public class StructuralEntry implements IRange {
     public void write(Consumer<String> out) {
         String line = this.type.name().toLowerCase(Locale.ENGLISH) + "def "
                 + start + ' ' + length + ' ' + name;
-        if (this.type == Type.METHOD)
+        if (this.type == Type.METHOD || this.type == Type.FIELD)
             line += ' ' + desc;
         out.accept(line);
     }

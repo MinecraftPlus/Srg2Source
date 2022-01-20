@@ -19,6 +19,9 @@
 
 package net.minecraftforge.srg2source.util;
 
+import org.eclipse.jdt.core.dom.FieldDeclaration;
+import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -135,5 +138,16 @@ public class Util {
 
     public static String detectLineEnd(String data) {
         return data.indexOf("\r\n" ) != -1 ? "\r\n" : "\n";
+    }
+
+    public static String getFieldName(FieldDeclaration field){
+        String name = null;
+        List<VariableDeclarationFragment> fragments = field.fragments();
+        for (VariableDeclarationFragment fragment : fragments) {
+            if(fragment.resolveBinding() != null) {
+                name = fragment.resolveBinding().getName();
+            }
+        }
+        return name;
     }
 }
