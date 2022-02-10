@@ -784,4 +784,86 @@ public class RangeApplier extends ConfLogger<RangeApplier> {
 
         return prefix + newClass.toLowerCase(Locale.ENGLISH) + old.substring(expected.length());
     }
+
+    private List<String> getClassComment(String name) {
+        List<String> commentLines = new ArrayList<>();
+        for (IMappingFile srg : srgs) {
+            IMappingFile.IClass cls = srg.getClass(name);
+            if (cls != null) {
+                String clscom = cls.getMetadata().getOrDefault("comment", null);
+                if (clscom != null) {
+                    commentLines.addAll(List.of(clscom.split("\\r?\\n")));
+                }
+            }
+        }
+        return commentLines;
+    }
+
+    private List<String> getFieldComment(String owner, String name) {
+        List<String> commentLines = new ArrayList<>();
+        for (IMappingFile srg : srgs) {
+            IMappingFile.IClass cls = srg.getClass(owner);
+            if (cls != null) {
+                IMappingFile.IField fld = cls.getField(name);
+                if (fld != null) {
+                    String fldcom = fld.getMetadata().getOrDefault("comment", null);
+                    if (fldcom != null) {
+                        commentLines.addAll(List.of(fldcom.split("\\r?\\n")));
+                    }
+                }
+            }
+        }
+        return commentLines;
+    }
+
+    private List<String> getMethodComment(String owner, String name, String desc) {
+        List<String> commentLines = new ArrayList<>();
+        for (IMappingFile srg : srgs) {
+            IMappingFile.IClass cls = srg.getClass(owner);
+            if (cls != null) {
+                IMappingFile.IMethod mtd = cls.getMethod(name, desc);
+                if (mtd != null) {
+                    String mtdcom = mtd.getMetadata().getOrDefault("comment", null);
+                    if (mtdcom != null) {
+                        commentLines.addAll(List.of(mtdcom.split("\\r?\\n")));
+                    }
+                    for (IMappingFile.IParameter parameter : mtd.getParameters()) {
+                        String parcom = parameter.getMetadata().getOrDefault("comment", null);
+                        if (parcom != null)
+                            commentLines.add("@param " + parameter.getMapped() + " " + parcom);
+                    }
+                }
+            }
+        }
+        return commentLines;
+    }
+
+    private String formatComment(List<String> commentLines, int indent) {
+        if (commentLines.isEmpty())
+            return "";
+
+        StringBuilder builder = new StringBuilder();
+        builder.append("/**" + newline);
+
+        // TODO Create more efficient way to build comment, such as proper order for @param, @return, @see etc...
+        List<String> regular = commentLines.stream().filter(l -> !l.startsWith("@")).collect(Collectors.toList());
+        List<String> special = commentLines.stream().filter(l -> l.startsWith("@")).sorted().collect(Collectors.toList());
+
+        String indentPrefix = " ".repeat(indent);
+        boolean endsBlank = false;
+        for (String line : regular) {
+            endsBlank = line.isBlank();
+            builder.append((indentPrefix + " * " + line).stripTrailing() + newline);
+        }
+        if (!special.isEmpty()) {
+            if (!endsBlank)
+                builder.append(indentPrefix + " *" + newline);
+            for (String line : special) {
+                builder.append((indentPrefix + " * " + line).stripTrailing() + newline);
+            }
+        }
+        builder.append(indentPrefix + " */" + newline);
+        builder.append(indentPrefix); // shift node to indentation
+        return builder.toString();
+    }
 }

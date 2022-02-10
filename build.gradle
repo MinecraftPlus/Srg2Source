@@ -36,6 +36,10 @@ configurations {
 
 repositories {
     maven {
+        name = "minecraftplus"
+        url = "https://maven.minecraftplus.org/"
+    }
+    maven {
         name = "forge"
         url = "https://maven.minecraftforge.net/"
     }
@@ -64,7 +68,7 @@ dependencies {
     implementation 'com.google.code.findbugs:jsr305:3.0.2'
 
     //Because tons of projects all parsing SRG files is annoying
-    implementation 'net.minecraftforge:srgutils:0.4.3'
+    implementation 'org.minecraftplus:srgutils:0.4.31'
 }
 
 jar {
