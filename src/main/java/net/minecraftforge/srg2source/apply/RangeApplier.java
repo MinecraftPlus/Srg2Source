@@ -264,7 +264,45 @@ public class RangeApplier extends ConfLogger<RangeApplier> {
         Set<String> importsToAdd = new TreeSet<>();
 
         StructuralEntryProcessor structProc = (structure) -> {
-            // Nothing, we don't process structures yet...
+            List<String> commentLines;
+            switch (structure.getType()) {
+                case CLASS:
+                case INTERFACE:
+                case ENUM:
+                    commentLines = getClassComment(structure.getName());
+                    break;
+                case METHOD:
+                    commentLines = getMethodComment(structure.getParent().getName(), structure.getName(), structure.getDescriptor());
+                    break;
+                case FIELD:
+                    commentLines = getFieldComment(structure.getParent().getName(), structure.getName());
+                    break;
+                default:
+                    commentLines = Collections.emptyList();
+            }
+
+            if (commentLines.isEmpty()) {
+                return;
+            }
+
+            int start = structure.getStart();
+            int end = start + structure.getLength();
+
+            log("Insert comment of " + commentLines.size() + " lines " + commentLines);
+            log("  to " + structure + " Shift[" + shift.get() + "]");
+
+            // Insert algorithm:
+            // 1. find indent (distance to last line end)
+            int indent = 0;
+            while (outData.charAt(start + shift.get() - (indent + 1)) != '\n') {
+                indent++;
+            }
+            // 2. format comment with indent
+            String comment = formatComment(commentLines, indent);
+            // 3. add comment text at specified range with nothing
+            outData.insert(start + shift.get(), comment);
+            // 4. shift future ranges by difference in text length
+            shift.add(comment.length());
         };
 
         RangeEntryProcessor entryProc = (info, parent) -> {
