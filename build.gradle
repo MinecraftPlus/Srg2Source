@@ -5,6 +5,10 @@ buildscript {
             name = "forge"
             url = "https://maven.minecraftforge.net/"
         }
+        maven {
+            name = "minecraftplus"
+            url = "https://maven.minecraftplus.org/"
+        }
     }
     dependencies {
         classpath 'com.guardsquare:proguard-gradle:7.1.1'
@@ -40,10 +44,15 @@ repositories {
         url = "https://maven.minecraftforge.net/"
     }
     maven {
+        name = "minecraftplus"
+        url = "https://maven.minecraftplus.org/"
+    }
+    maven {
         name = "eclipse"
         url = "https://repo.eclipse.org/content/groups/eclipse"
     }
     mavenCentral()
+    mavenLocal()
 }
 
 dependencies {
@@ -55,7 +64,7 @@ dependencies {
     implementation 'net.sf.jopt-simple:jopt-simple:5.0.4' // easy CLI parsing
 
     // necessary eclipse AST stuff
-    implementation 'org.eclipse.jdt:org.eclipse.jdt.core:3.28.0.v20211117-1416'
+    implementation 'org.eclipse.jdt:org.eclipse.jdt.core:3.28.0'
 
     //We use this to patch the JDT at runtime
     implementation 'cpw.mods:modlauncher:8.0.9'
@@ -65,6 +74,13 @@ dependencies {
 
     //Because tons of projects all parsing SRG files is annoying
     implementation 'net.minecraftforge:srgutils:0.4.3'
+}
+
+idea {
+    module {
+        downloadJavadoc = true
+        downloadSources = true
+    }
 }
 
 jar {

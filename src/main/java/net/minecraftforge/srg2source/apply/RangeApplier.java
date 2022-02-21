@@ -71,14 +71,14 @@ public class RangeApplier extends ConfLogger<RangeApplier> {
     private Map<String, String> clsSrc2Internal = new HashMap<>();
     private Map<String, ExceptorClass> excs = Collections.emptyMap();
     private boolean keepImports = false; // Keep imports that are not referenced anywhere in code.
-    private InputSupplier input = null;
-    private OutputSupplier output = null;
-    private Map<String, RangeMap> range = new HashMap<>();
+    protected InputSupplier input = null;
+    protected OutputSupplier output = null;
+    protected Map<String, RangeMap> range = new HashMap<>();
     private ClassMeta meta = null;
     private Map<String, String> guessLambdas = null;
     private boolean guessLocals = false;
     private boolean sortImports = false;
-    private String newline = "\n";
+    protected String newline = "\n";
 
     public void readSrg(Path srg) {
         try (InputStream in = Files.newInputStream(srg)) {

@@ -118,7 +118,8 @@ public class ConsoleTool {
 
     private static enum Task {
         APPLY(RangeApplyMain::main),
-        EXTRACT(RangeExtractMain::main);
+        EXTRACT(RangeExtractMain::main),
+        REMOVE(RangeRemoveMain::main);
 
         private Consumer<String[]> task;
         private Task(Consumer<String[]> task) {
