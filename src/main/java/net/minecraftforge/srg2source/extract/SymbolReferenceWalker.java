@@ -448,8 +448,10 @@ public class SymbolReferenceWalker {
                 if (this.mixins == null || !this.mixins.processMethodReference(node, mtd, owner, name, desc))
                     builder.addMethodReference(node.getStartPosition(), node.getLength(), node.toString(), owner, name, desc);
                 return true;
+            case IBinding.PACKAGE:
+                builder.addPackageReference(node.getStartPosition(), node.getLength(), node.toString());
+                return false;
             // These I have not tested, so assume it will walk correctly.
-            //case IBinding.PACKAGE:
             //case IBinding.ANNOTATION:
             //case IBinding.MEMBER_VALUE_PAIR:
             //case IBinding.MODULE:
@@ -497,7 +499,7 @@ public class SymbolReferenceWalker {
             case IBinding.VARIABLE: // Variables are things like Field references, Dist.CLEINT. We want the parts separately.
                 return true;
             case IBinding.PACKAGE: // This should be addressed in the above TYPE case. So we should never get here.
-                error(node, "Unknown IBinding PACKAGE case: " + node.toString());
+                builder.addPackageReference(node.getStartPosition(), node.getLength(), node.getFullyQualifiedName());
                 return false;
             // These I have not tested, so assume it will walk correctly.
             //case IBinding.METHOD:
@@ -564,13 +566,14 @@ public class SymbolReferenceWalker {
      * We need to walk the children because there may be annotations which need to be extracted.
      */
     private boolean process(PackageDeclaration node) {
+        builder.addPackageDeclaration(node.getStartPosition(), node.getLength(), node.getName().getFullyQualifiedName());
+
+        SymbolReferenceWalker walker = new SymbolReferenceWalker(this, null, null, null);
+        walker.acceptChild(node.getName());
         if (node.getAST().apiLevel() >= JLS3) {
-            //acceptChild(node.getJavadoc()); - Don't care
-            acceptChildren(node.annotations());
+            //walker.acceptChild(node.getJavadoc()); - Don't care... //TODO: Do care...
+            walker.acceptChildren(node.annotations());
         }
-        //acceptChild(node.getName());
-        Name name = node.getName();
-        builder.addPackageReference(name.getStartPosition(), name.getLength(), name.getFullyQualifiedName());
         return false;
     }
 

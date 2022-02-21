@@ -30,6 +30,7 @@ import net.minecraftforge.srg2source.range.IRange;
 public class StructuralEntry implements IRange {
     public enum Type {
         ROOT,
+        PACKAGE,
         CLASS,
         METHOD((me, parent, data) -> {
             String[] pts = data.split(" ");
@@ -71,6 +72,10 @@ public class StructuralEntry implements IRange {
 
     public static StructuralEntry createAnnotation(StructuralEntry parent, int start, int length, String name) {
         return new StructuralEntry(Type.ANNOTATION, parent, start, length, name, null);
+    }
+
+    public static StructuralEntry createPackage(StructuralEntry parent, int start, int length, String name) {
+        return new StructuralEntry(Type.PACKAGE, parent, start, length, name, null);
     }
 
     public static StructuralEntry createClass(StructuralEntry parent, int start, int length, String name) {

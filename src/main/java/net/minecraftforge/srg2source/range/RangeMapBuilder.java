@@ -126,6 +126,10 @@ public class RangeMapBuilder extends ConfLogger<RangeMapBuilder> {
         addStructure(StructuralEntry.createAnnotation(getParent(start, length), start, length, name));
     }
 
+    public void addPackageDeclaration(int start, int length, String name) {
+        addStructure(StructuralEntry.createPackage(getParent(start, length), start, length, name));
+    }
+
     public void addClassDeclaration(int start, int length, String name) {
         addStructure(StructuralEntry.createClass(getParent(start, length), start, length, name));
     }
