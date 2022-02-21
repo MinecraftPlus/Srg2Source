@@ -277,7 +277,29 @@ public class RangeApplier extends ConfLogger<RangeApplier> {
         Set<String> importsToAdd = new TreeSet<>();
 
         StructuralEntryProcessor structProc = (structure) -> {
-            // Nothing, we don't process structures yet...
+            int start = structure.getStart();
+            int end = start + structure.getLength();
+
+            switch (structure.getType()) {
+                case PACKAGE:
+                    if (newTopLevelClassPackage == null) { // moving to no package - need to remove package structure
+                        log("Remove " + structure + " Shift[" + shift.get() + "]");
+
+                        // Remove algorithm:
+                        // 1. find end distance to first character that is not whitespace (removes empty lines)
+                        int endDistance = 0;
+                        while (Character.isWhitespace(outData.charAt(end + shift.get() + endDistance))) {
+                            endDistance++;
+                        }
+                        // 2. textually replace text at specified range with nothing
+                        outData.replace(start + shift.get(), end + shift.get() + endDistance, "");
+                        // 3. shift future ranges by difference in text length
+                        shift.add(-(structure.getLength() + endDistance));
+
+                        return StructuralEntryProcessor.Result.REMOVED;
+                    }
+            }
+
             return StructuralEntryProcessor.Result.UNTOUCHED;
         };
 
@@ -296,7 +318,7 @@ public class RangeApplier extends ConfLogger<RangeApplier> {
             String newName = null;
             switch (info.getType()) {
                 case PACKAGE: // This should be OUR package reference, other packages are expressed as qualified class entries.
-                    newName = newTopLevelClassPackage.replace('/', '.'); //TODO: Support remapping to no package, thus removing this entirely. Problem is this doesn't reference the "package" text itself.
+                    newName = newTopLevelClassPackage.replace('/', '.');
                     break;
                 case CLASS: {
                     ClassReference ref = (ClassReference)info;
@@ -406,7 +428,10 @@ public class RangeApplier extends ConfLogger<RangeApplier> {
     public void stepAllStartingFrom(IRange entry, StructuralEntry parent, StructuralEntryProcessor saction, RangeEntryProcessor eaction) {
         if (entry instanceof StructuralEntry) {
             StructuralEntry structure = (StructuralEntry) entry;
-            saction.process(structure);
+            StructuralEntryProcessor.Result result = saction.process(structure);
+            if (result.equals(StructuralEntryProcessor.Result.REMOVED)) {
+                return;
+            }
 
             List<IRange> elements = new ArrayList<>();
             elements.addAll(structure.getEntries(false));
