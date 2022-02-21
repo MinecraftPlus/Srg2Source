@@ -217,12 +217,25 @@ public class RangeApplier extends ConfLogger<RangeApplier> {
 
     public interface StructuralEntryProcessor {
 
+        enum Result {
+            /**
+             * Used when no changes was made to structure entry while processing.
+             */
+            UNTOUCHED,
+            /**
+             * Used when whole structure was removed from code. This means that
+             * structure children cannot be processed.
+             */
+            REMOVED;
+        };
+
         /**
-         * Takes given {@code entry} and processes it
+         * Takes given {@code entry} and processes it.
          *
          * @param entry structural entry to process
+         * @return status from one of {@link Result} enum
          */
-        void process(StructuralEntry entry);
+        Result process(StructuralEntry entry);
     }
 
     public interface RangeEntryProcessor {
@@ -265,6 +278,7 @@ public class RangeApplier extends ConfLogger<RangeApplier> {
 
         StructuralEntryProcessor structProc = (structure) -> {
             // Nothing, we don't process structures yet...
+            return StructuralEntryProcessor.Result.UNTOUCHED;
         };
 
         RangeEntryProcessor entryProc = (info, parent) -> {
