@@ -1,5 +1,8 @@
 start 1 not_test/package-info.java 69666c5b162c8c5492587fa74dd8f632
-class 1 10 Deprecated false java/lang/Deprecated
-class 13 9 Generated false javax/annotation/processing/Generated
-package 40 8 not_test
+packagedef 0 49 not_test
+# Start PACKAGE not_test
+  class 1 10 Deprecated false java/lang/Deprecated
+  class 13 9 Generated false javax/annotation/processing/Generated
+  package 40 8 not_test
+# End PACKAGE
 end

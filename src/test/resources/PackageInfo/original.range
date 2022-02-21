@@ -1,5 +1,8 @@
 start 1 test/package-info.java 2a280dbefb43cfe3a936f52dc94fb4b8
-class 1 10 Deprecated false java/lang/Deprecated
-class 13 9 Generated false javax/annotation/processing/Generated
-package 40 4 test
+packagedef 0 45 test
+# Start PACKAGE test
+  class 1 10 Deprecated false java/lang/Deprecated
+  class 13 9 Generated false javax/annotation/processing/Generated
+  package 40 4 test
+# End PACKAGE
 end
